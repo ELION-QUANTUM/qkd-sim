@@ -124,3 +124,17 @@ python3 -m unittest discover -s tests
 - [docs/metrics.md](docs/metrics.md)
 - [docs/research_note.md](docs/research_note.md)
 - [docs/roadmap.md](docs/roadmap.md)
+
+## Contributing
+
+Contribution guidance is documented in [CONTRIBUTING.md](CONTRIBUTING.md).
+
+In short:
+
+- keep claims aligned with implementation
+- include tests when behavior changes
+- prefer explicit, technically grounded additions over speculative abstractions
+
+## License
+
+This repository is released under the proprietary company license in [LICENSE](LICENSE).
