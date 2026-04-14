@@ -1,46 +1,31 @@
 # Modeling Assumptions
 
-This document lists explicit assumptions made by `qkd-sim`.
+This repository now contains two distinct modeling regimes:
 
-The simulator prioritizes clarity and reproducibility over physical realism.
+- a mathematically grounded state-vector computation core in `q3.simulator`
+- an abstract protocol-level QKD model in `q3.communication.qkd`
 
----
+They should not be confused.
 
-## Quantum State Modeling
+## Computation core assumptions
 
-- Quantum states are modeled abstractly.
-- No qubit-level physics is simulated.
-- Measurement outcomes are probabilistic by design.
+- State evolution is modeled exactly for the implemented gate set.
+- The simulator is intended for small circuits only.
+- Measurement is computational-basis only.
+- No device noise or calibration effects are modeled.
 
----
+## QKD module assumptions
 
-## Channel Model
+- BB84 is represented at the protocol layer, not the physical layer.
+- Channel noise is modeled as independent classical bit flips.
+- Intercept-resend is modeled abstractly.
+- Post-processing is represented through deterministic simplified estimates.
 
-- Noise is modeled as independent bit flips.
-- No temporal correlation is assumed.
-- Loss is not explicitly modeled.
+## Non-goals
 
----
+This repository does not attempt to:
 
-## Attacker Model
-
-- Intercept–resend is idealized.
-- Eve has no memory or adaptive strategy.
-- Attacks are not stealth-optimized.
-
----
-
-## Security Decisions
-
-- Security is determined via threshold rules.
-- Thresholds are configurable and visible.
-- No statistical confidence bounds are computed.
-
----
-
-## Non-Goals
-
-This simulator does not aim to:
-- reproduce laboratory results
-- replace hardware-level simulators
-- claim physical security guarantees
+- reproduce laboratory QKD results
+- simulate optics or hardware components
+- provide production cryptographic guarantees
+- claim hardware readiness

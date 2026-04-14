@@ -1,65 +1,36 @@
-# qkd-sim — Research Note (v0.1)
+# Q³ Research Note
 
 ## Purpose
 
-`qkd-sim` is a software-only simulator for studying **protocol-level behavior**
-of Quantum Key Distribution (QKD) under noise and adversarial disturbance.
+This repository exists to establish a technically credible early-stage foundation for Q³.
 
-The project focuses on **decision-relevant signals** rather than physical
-device modeling.
+The immediate research goals are:
 
----
+- validate a small computation core with explicit gate math
+- keep a communication module for BB84-level protocol experiments
+- support hybrid workflows where classical logic can consume simulation outputs
 
-## Research Question
+## Research scope
 
-The simulator is designed to explore questions such as:
+### In scope
 
-- How does observed error rate evolve with channel noise?
-- At what point does protocol behavior transition from usable to unsafe?
-- Can simple, explicit metrics support higher-level decision logic?
+- circuit construction
+- state-vector execution for small circuits
+- Bell-state and measurement validation
+- abstract BB84 protocol modeling
+- deterministic seeded protocol experiments
 
----
+### Out of scope
 
-## Scope and Non-Goals
+- hardware execution
+- large-scale quantum algorithm support
+- pulse or calibration control
+- optics-level QKD modeling
+- full cryptographic post-processing
 
-### In Scope
-- QKD protocol logic (currently BB84)
-- Abstract channel noise
-- Simple eavesdropping models
-- Deterministic, reproducible experiments
-- Explicit security decision criteria
+## Maturity
 
-### Out of Scope
-- Quantum hardware simulation
-- Device-level physics
-- Production cryptographic guarantees
-- Full reconciliation and privacy amplification
+This is a prototype.
 
----
-
-## Design Principles
-
-- Explicit assumptions
-- Deterministic behavior (seeded randomness)
-- Transparent thresholds
-- Minimal, autonomy-grade outputs
-
----
-
-## Intended Use
-
-This tool is intended for:
-- education
-- protocol comparison
-- exploratory research
-- system-level reasoning
-
-It is not intended to claim physical security guarantees.
-
----
-
-## Status
-
-Version: v0.1  
-The API is frozen at this stage.
-Future changes will be additive.
+It is serious enough to evaluate architecture, APIs, and foundational correctness.
+It is not mature enough to support broad technical claims beyond that scope.

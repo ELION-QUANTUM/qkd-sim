@@ -1,125 +1,38 @@
-# QKD Metrics and Decision Criteria
+# Q³ Metrics
 
-This document defines the metrics produced by `qkd-sim`
-and the rationale behind their interpretation.
+## Computation results
 
+The state-vector backend returns:
 
----
+- `statevector` — final amplitude vector before measurement collapse
+- `counts` — shot counts over measured classical bitstrings
+- `shots` — number of repeated measurement samples
+- `memory` — per-shot measured classical strings
 
-## Raw Bits
+These outputs are suitable for small circuit validation and example-driven testing.
 
-**Definition:**  
-Total number of quantum states transmitted.
+## QKD protocol results
 
-**Purpose:**  
-Baseline for all derived quantities.
+The BB84 model returns:
 
----
+- `raw_bits`
+- `matched_bases`
+- `final_key_length`
+- `error_rate`
+- `secure`
+- `threat_level`
+- `threat_reason`
+- `postprocessing`
 
-## Matched Bases
+These values are protocol-level signals. They are not physical security guarantees.
 
-**Definition:**  
-Number of positions where sender and receiver used the same basis.
+## Decision interface
 
-**Purpose:**  
-Determines the maximum possible sifted key length.
+The legacy-friendly `qkd_decision` API intentionally stays minimal:
 
----
+- `secure`
+- `threat_level`
+- `error_rate`
+- `thresholds_used`
 
-## Final Key Length
-
-**Definition:**  
-Key length after basis sifting (and before advanced post-processing).
-
-**Purpose:**  
-Indicates usable secret material under idealized assumptions.
-
----
-
-## Error Rate (QBER)
-
-**Definition:**  
-Fraction of mismatched bits within the sifted key.
-
-QBER = errors / matched_bases
-
-
-**Interpretation:**
-- Low QBER -> channel likely uncompromised
-- High QBER -> noise or active eavesdropping
-
-This simulator treats QBER as a decision signal.
-
----
-
-## Secure Flag
-
-**Definition:**  
-Boolean indicator derived from a fixed threshold rule.
-
-secure = (QBER ≤ threshold)
-
-
-**Purpose:**  
-Provide a simple, explicit decision outcome suitable for
-automation and higher-level logic.
-
-The threshold is intentionally configurable and conservative.
-
----
-
-## Design Philosophy
-
-- Metrics are explicit and human-readable
-- Thresholds are visible and adjustable
-- Decisions are deterministic
-- No hidden heuristics
-
-This makes the simulator suitable for:
-- education
-- protocol comparison
-- system-level reasoning
-- autonomy research inputs
-
-## Threat Classification
-
-`qkd-sim` maps observed error rate into a coarse threat label:
-
-- `benign_noise` — consistent with low channel noise
-- `suspected_attack` — consistent with strong adversarial disturbance
-- `unknown` — ambiguous zone requiring caution
-
-This classification is deterministic and threshold-based by design.
-
-## Configurable Thresholds
-
-Threat classification thresholds in `qkd-sim` are explicit and configurable.
-
-Default values:
-
-- benign_noise_max = 0.03  
-- attack_min = 0.06  
-
-These thresholds define how observed error rates are interpreted.
-
-Users may override thresholds to:
-- explore sensitivity
-- reproduce experiments
-- model different channel assumptions
-- integrate with higher-level decision logic
-
-No thresholds are hidden or hard-coded into the decision process.
-
-## Reproducibility
-
-All stochastic behavior in `qkd-sim` can be made deterministic
-by supplying a random seed.
-
-When a seed is provided:
-- protocol behavior is repeatable
-- results can be audited
-- experiments can be compared fairly
-
-This is required for research and autonomy validation.
-
-
+This is meant for higher-level decision logic, not for claiming a full cryptographic stack.

@@ -1,161 +1,122 @@
-**Current release:** v0.1 (research-stage, API frozen)
-
-
 # qkd-sim
 
-qkd-sim is a research-stage simulator for Quantum Key Distribution (QKD) protocols.
-It is designed for protocol behavior analysis (noise, attacks, post-processing) and for
-producing reliability metrics that can feed higher-level decision logic.
+`qkd-sim` now hosts the early **Q³** prototype: a Python-based experimental framework for
+quantum computation, quantum communication, and system-level simulation.
 
-Developed under **ℵ - QUANTUM** (software-first quantum simulation and reliability tooling).
+The repository name is retained for continuity, but the codebase is no longer just a narrow
+QKD sandbox. QKD remains in the repository as one communication module inside a broader
+framework.
 
-This project is software-only and does not simulate quantum hardware,
-qubits, or physical quantum devices.
+## What Q³ is
 
+Q³ is an early-stage research framework with four explicit layers:
 
-## What this project is (and is not)
+- **Language/API layer**: Python-first circuit and protocol APIs
+- **Circuit layer**: typed instructions and circuit construction
+- **Simulation layer**: a small state-vector backend for auditable experiments
+- **Communication layer**: protocol-level QKD models built alongside the computation core
 
-### It is
-- a clean reference implementation of QKD protocol logic
-- a simulator of abstract channels, noise, and eavesdropping models
-- a producer of observable metrics (e.g., error rate) for analysis and validation
+Q³ is a prototype. It is not hardware-enabled, not optimized, and not feature-complete.
 
-### It is not
-- a quantum computer simulator
-- a qubit/optics hardware model
-- a flight system
----
+## What is implemented today
 
-## Purpose
+- a minimal `Circuit` abstraction
+- gate support for `H`, `X`, `Z`, and `CX`
+- computational-basis measurement
+- a small state-vector simulator for low-qubit experiments
+- Bell-state and measurement examples
+- an abstract BB84 protocol model under `q3.communication.qkd`
+- compatibility exports for legacy `qkd` imports
 
-Quantum Key Distribution protocols are conceptually simple but
-operationally fragile.
+## What is not implemented
 
-`qkd-sim` provides a clean, readable reference implementation of core QKD
-concepts suitable for:
+- real hardware execution
+- large gate libraries
+- pulse control
+- transpilation
+- noise-aware quantum device modeling
+- cryptographically complete QKD post-processing
 
-- research exploration
-- education
-- protocol comparison
-- higher-level system modeling
+## Repository structure
 
-The simulator models abstract quantum channels and protocol behavior
-rather than device-level physics.
+```text
+q3/
+  core/            # registers and gate definitions
+  circuits/        # circuit abstraction
+  simulator/       # state-vector backend and backend interface
+  communication/   # QKD and communication-oriented modules
+  compat/          # legacy qkd-sim compatibility exports
 
----
+qkd/               # thin compatibility layer for existing public imports
+examples/          # working examples
+experiments/       # small reproducible experiment scripts
+docs/              # architecture and maturity notes
+tests/             # unit and integration tests
+```
 
-## Scope
+## Why Q³ exists
 
-`qkd-sim` focuses on:
+Q³ is not trying to out-market Qiskit or Cirq. The design goal is narrower and more realistic:
 
-- QKD protocol logic
-- abstract channel noise effects
-- eavesdropping strategies
-- classical post-processing stages
+- keep the core small enough to audit
+- combine circuit execution and communication protocols in one framework
+- support hybrid classical-quantum research workflows
+- expose system-level behavior without pretending unsupported hardware capability
 
-It explicitly excludes:
+## Primary API
 
-- quantum hardware simulation
-- qubit-level physical modeling
-- device-specific effects
+```python
+from q3.circuits import Circuit
+from q3.simulator import StateVectorBackend
 
----
+circuit = Circuit(num_qubits=2, num_clbits=2)
+circuit.h(0).cx(0, 1).measure_all()
 
-## Supported Protocols
+result = StateVectorBackend().run(circuit, shots=1024)
+print(result["counts"])
+```
 
-**In progress**
-- BB84
+## QKD compatibility
 
-**Planned**
-- E91
-- configurable channel noise models
-- intercept–resend attack
-- error correction
-- privacy amplification
-
----
-
-## Architecture Overview
-
-qkd/
---> protocols/ # QKD protocol implementations
---> channel.py # Abstract quantum channel models
---> attacks.py # Eavesdropper models
---> reconciliation.py # Error correction
---> privacy.py # Privacy amplification
-
-
-The architecture is intentionally modular to support experimentation,
-analysis, and future extensions.
-
----
-
-## Observed metrics (current)
-
-The simulator outputs a simple report rather than only returning a key:
-
-- `raw_bits` - total bits sent
-- `matched_bases` - how many bases matched (sifted set size)
-- `final_key_length` - resulting key size after sifting
-- `error_rate` - observed bit error rate (QBER)
-- `secure` - boolean decision based on a threshold rule
-
-These values are intended for analysis and decision logic.
-
----
-
-## Relationship to Autonomy & Systems Research
-
-Simulation outputs from `qkd-sim` can be used to generate
-protocol-level behavior and reliability indicators.
-
-These outputs may serve as inputs to higher-level decision logic
-(e.g. mission or system autonomy research).
-
-This connection is conceptual, not operational or flight-related.
-
----
-
-## Relationship Between ℵ - QUANTUM and ℵ - SYSTEMS
-
-- **ℵ - QUANTUM** explores quantum computing and communication foundations
-  through focused software and simulation tools.
-- **ℵ - SYSTEMS** applies selected results to space mission
-  and autonomy contexts.
-
-The two initiatives are related but distinct in scope.
-
----
-
-## Status
-
-Research-stage.
-
-Interfaces, structure, and supported protocols may evolve.
-The project prioritizes clarity and correctness over
-performance or completeness.
-
----
-
-## Quick:
-
-
-python examples/basic_bb84.py 
-
-## Batch Experiments
-
-To study how QKD behavior changes with channel noise:
-
-python experiments/noise_sweep.py
-
-
-## Autonomy-grade API
-
+Legacy imports continue to work:
 
 ```python
 from qkd import qkd_decision
+```
 
-decision = qkd_decision(n=1000, noise_rate=0.01)
-print(decision)
+This path is maintained for continuity. New QKD work should use:
 
-thresholds_used
+```python
+from q3.communication.qkd import bb84_protocol, qkd_decision
+```
+
+## Quick start
+
+Install the single runtime dependency:
+
+```bash
+python3 -m pip install numpy
+```
+
+Run the primary examples:
+
+```bash
+python3 examples/bell_state.py
+python3 examples/simple_circuit.py
+python3 examples/measurement_demo.py
+python3 examples/bb84_protocol.py
+```
+
+Run tests:
+
+```bash
+python3 -m unittest discover -s tests
+```
+
+## Documentation
+
+- [docs/q3-overview.md](docs/q3-overview.md)
+- [docs/assumptions.md](docs/assumptions.md)
+- [docs/metrics.md](docs/metrics.md)
+- [docs/research_note.md](docs/research_note.md)
+- [docs/roadmap.md](docs/roadmap.md)

@@ -1,8 +1,3 @@
-def amplify(key, leakage):
-    """
-    Placeholder for privacy amplification.
+from q3.compat.qkd import amplify
 
-    Returns a reduced key.
-    """
-    return key
-
+__all__ = ["amplify"]

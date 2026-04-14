@@ -1,24 +1,19 @@
-# Project Roadmap (Non-Binding)
+# Q³ Roadmap
 
-This roadmap reflects research intent.
+## Near term
 
----
+- stabilize the circuit and simulator API
+- extend tests around gate behavior and measurement
+- add more communication examples using the existing BB84 module
 
-## Near Term
-- Stabilize BB84 decision pipeline
-- Extend noise models
-- Improve attack discrimination
+## Mid term
 
----
+- add additional gates and multi-qubit support utilities
+- introduce richer noise models at the simulation level
+- add an E91-style protocol module if the abstraction remains honest
 
-## Mid Term
-- Add alternative protocols (e.g., E91)
-- Compare protocol robustness
-- Expose batch simulation interfaces
+## Long term
 
----
-
-## Long Term
-- Integration with system-level autonomy research
-- Scenario-driven QKD evaluation
-- Cross-domain simulation inputs
+- formalize backend interfaces further
+- evaluate a native-performance backend path
+- explore carefully bounded hardware-adapter work without claiming support prematurely
