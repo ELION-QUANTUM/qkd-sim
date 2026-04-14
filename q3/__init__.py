@@ -1,13 +1,16 @@
 """Q3 public API."""
 
-from .core import ClassicalRegister, QubitRegister
+from .core import BitRef, ClassicalRegister, QubitRef, QubitRegister
 from .circuits import Circuit
-from .simulator import HardwareBackend, StateVectorBackend
+from .simulator import HardwareBackend, RunResult, StateVectorBackend
 
 __all__ = [
     "Circuit",
     "QubitRegister",
     "ClassicalRegister",
+    "QubitRef",
+    "BitRef",
     "StateVectorBackend",
     "HardwareBackend",
+    "RunResult",
 ]

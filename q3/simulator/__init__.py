@@ -1,3 +1,3 @@
-from .statevector import Backend, HardwareBackend, StateVectorBackend
+from .statevector import Backend, HardwareBackend, RunResult, StateVectorBackend
 
-__all__ = ["Backend", "StateVectorBackend", "HardwareBackend"]
+__all__ = ["Backend", "StateVectorBackend", "HardwareBackend", "RunResult"]

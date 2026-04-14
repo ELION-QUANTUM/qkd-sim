@@ -21,6 +21,8 @@ The public interface is a small Python API:
 
 - `QubitRegister`
 - `ClassicalRegister`
+- `QubitRef`
+- `BitRef`
 - `Circuit`
 - `StateVectorBackend`
 
@@ -49,6 +51,7 @@ Measurement support:
 - computational basis
 - shot-based sampling
 - per-shot collapse logic
+- structured `RunResult` output
 
 ### 4. Communication layer
 

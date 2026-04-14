@@ -66,14 +66,17 @@ Q³ is not trying to out-market Qiskit or Cirq. The design goal is narrower and 
 ## Primary API
 
 ```python
-from q3.circuits import Circuit
-from q3.simulator import StateVectorBackend
+from q3 import Circuit, StateVectorBackend
 
-circuit = Circuit(num_qubits=2, num_clbits=2)
-circuit.h(0).cx(0, 1).measure_all()
+circuit = Circuit("bell")
+q = circuit.qubits(2)
+m = circuit.bits(2)
+
+circuit.h(q[0]).cx(q[0], q[1])
+circuit.measure(q[0], m[0]).measure(q[1], m[1])
 
 result = StateVectorBackend().run(circuit, shots=1024)
-print(result["counts"])
+print(result.counts)
 ```
 
 ## QKD compatibility
@@ -116,6 +119,7 @@ python3 -m unittest discover -s tests
 ## Documentation
 
 - [docs/q3-overview.md](docs/q3-overview.md)
+- [docs/q3-api.md](docs/q3-api.md)
 - [docs/assumptions.md](docs/assumptions.md)
 - [docs/metrics.md](docs/metrics.md)
 - [docs/research_note.md](docs/research_note.md)

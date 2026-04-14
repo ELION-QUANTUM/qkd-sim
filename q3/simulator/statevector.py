@@ -1,22 +1,38 @@
 from __future__ import annotations
 
 from collections import Counter
-from typing import Dict, Optional, Protocol
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Protocol
 
 import numpy as np
 
 from q3.core.gates import I, SINGLE_QUBIT_GATES
 
 
+@dataclass(frozen=True)
+class RunResult:
+    statevector: np.ndarray
+    counts: Dict[str, int]
+    shots: int
+    memory: List[str]
+
+    def __getitem__(self, key):
+        return getattr(self, key)
+
+
 class Backend(Protocol):
-    def run(self, circuit, shots: int = 1024, seed: Optional[int] = None) -> Dict:
+    def run(
+        self, circuit, shots: int = 1024, seed: Optional[int] = None
+    ) -> RunResult:
         ...
 
 
 class HardwareBackend:
     """Reserved backend interface for future hardware connectors."""
 
-    def run(self, circuit, shots: int = 1024, seed: Optional[int] = None) -> Dict:
+    def run(
+        self, circuit, shots: int = 1024, seed: Optional[int] = None
+    ) -> RunResult:
         raise NotImplementedError(
             "Hardware execution is not implemented in this repository."
         )
@@ -28,7 +44,9 @@ class StateVectorBackend:
     def __init__(self, seed: Optional[int] = None):
         self.seed = seed
 
-    def run(self, circuit, shots: int = 1024, seed: Optional[int] = None) -> Dict:
+    def run(
+        self, circuit, shots: int = 1024, seed: Optional[int] = None
+    ) -> RunResult:
         if shots <= 0:
             raise ValueError("shots must be a positive integer.")
 
@@ -63,12 +81,12 @@ class StateVectorBackend:
                 counts[bitstring] += 1
                 memory.append(bitstring)
 
-        return {
-            "statevector": final_state,
-            "counts": dict(counts),
-            "shots": shots,
-            "memory": memory,
-        }
+        return RunResult(
+            statevector=final_state,
+            counts=dict(counts),
+            shots=shots,
+            memory=memory,
+        )
 
     @staticmethod
     def _zero_state(num_qubits: int) -> np.ndarray:
@@ -133,7 +151,11 @@ class StateVectorBackend:
         mask = 1 << (num_qubits - 1 - qubit)
         probabilities = np.abs(state) ** 2
         prob_zero = float(
-            np.sum(probabilities[[index for index in range(len(state)) if (index & mask) == 0]])
+            np.sum(
+                probabilities[
+                    [index for index in range(len(state)) if (index & mask) == 0]
+                ]
+            )
         )
         outcome = 0 if rng.random() < prob_zero else 1
 

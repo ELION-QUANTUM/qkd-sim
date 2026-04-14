@@ -1,3 +1,3 @@
-from .registers import ClassicalRegister, QubitRegister
+from .registers import BitRef, ClassicalRegister, QubitRef, QubitRegister
 
-__all__ = ["QubitRegister", "ClassicalRegister"]
+__all__ = ["QubitRegister", "ClassicalRegister", "QubitRef", "BitRef"]
