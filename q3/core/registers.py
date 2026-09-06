@@ -22,7 +22,7 @@ class BitRef:
 
 class QubitRegister:
     def __init__(self, size: int, label: str = "q"):
-        if size <= 0:
+        if type(size) is not int or size <= 0:
             raise ValueError("QubitRegister size must be positive.")
         self.size = size
         self.label = label
@@ -43,7 +43,7 @@ class QubitRegister:
 
 class ClassicalRegister:
     def __init__(self, size: int, label: str = "c"):
-        if size <= 0:
+        if type(size) is not int or size <= 0:
             raise ValueError("ClassicalRegister size must be positive.")
         self.size = size
         self.label = label

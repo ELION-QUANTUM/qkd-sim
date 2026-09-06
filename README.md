@@ -95,10 +95,10 @@ from q3.communication.qkd import bb84_protocol, qkd_decision
 
 ## Quick start
 
-Install the single runtime dependency:
+Install the package and its runtime dependency (Python 3.9+):
 
 ```bash
-python3 -m pip install numpy
+python3 -m pip install .
 ```
 
 Run the primary examples:
@@ -138,3 +138,31 @@ In short:
 ## License
 
 This repository is released under the proprietary company license in [LICENSE](LICENSE).
+
+## Correctness contracts
+
+- Measurements must be terminal: a gate after any measurement raises `ValueError`.
+  The returned statevector is the state before terminal measurement; counts and
+  memory use classical bits in index order. Sequential mid-circuit measurement is
+  outside this backend's scope.
+- The dense backend rejects circuits above 10 qubits before allocation (one
+  complex128 operator at the limit is 16 MiB, with additional temporary storage).
+- Integer indices refer to this circuit. Typed references must be the objects
+  returned by this circuit's registers; references from another register, even
+  with the same label/index, and manually constructed references are rejected.
+- Counts must be positive integers, seeds nonnegative integers or `None`, noise
+  a finite probability in `[0, 1]`, and attack either `None` or `intercept_resend`.
+  Thresholds require `0 <= benign_noise_max < attack_min <= 1`. Booleans are not
+  numeric settings. Invalid settings raise `ValueError`.
+- BB84 models Eve's basis-dependent measurement, Bob's remeasurement and public
+  Alice/Bob basis sifting. The no-attack and intercept-resend models remain abstract.
+- With no matched bases, `error_rate` is **None**, `secure` is **False** and
+  `threat_level` is **insufficient_data**. Legacy result keys/imports are retained;
+  consumers must handle the nullable QBER and the additional threat label.
+- `secure=True` means only that a nonempty sample passed the legacy QBER threshold.
+  It is not a cryptographic guarantee or a finite-key security assessment.
+  Reconciliation and privacy amplification remain educational length heuristics.
+
+CI installs the package, runs the unit regressions and all four public examples.
+Controlled basis cases complement a seeded 40,000-bit attack check with a tolerance
+of six binomial standard deviations around the model's expected 25% sifted QBER.

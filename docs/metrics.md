@@ -36,3 +36,7 @@ The legacy-friendly `qkd_decision` API intentionally stays minimal:
 - `thresholds_used`
 
 This is meant for higher-level decision logic, not for claiming a full cryptographic stack.
+
+With zero basis matches, QBER (`error_rate`) is `None`, `secure` is false and
+`threat_level` is `insufficient_data`. For nonempty samples, `secure` is only a
+legacy QBER threshold heuristic; it is not finite-key security evidence.

@@ -45,7 +45,7 @@ If you plan a larger architectural change, open an issue first and explain:
 Set up the environment:
 
 ```bash
-python3 -m pip install numpy
+python3 -m pip install .
 ```
 
 Run examples:

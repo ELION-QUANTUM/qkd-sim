@@ -41,16 +41,25 @@ class HardwareBackend:
 class StateVectorBackend:
     """Small state-vector backend for auditable early-stage experiments."""
 
+    # Dense complex128 operators use 16 MiB at ten qubits, plus temporaries.
+    MAX_QUBITS = 10
+
     def __init__(self, seed: Optional[int] = None):
         self.seed = seed
 
     def run(
         self, circuit, shots: int = 1024, seed: Optional[int] = None
     ) -> RunResult:
-        if shots <= 0:
+        if type(shots) is not int or shots <= 0:
             raise ValueError("shots must be a positive integer.")
 
-        rng = np.random.default_rng(self.seed if seed is None else seed)
+        circuit.validate()
+        if circuit.num_qubits > self.MAX_QUBITS:
+            raise ValueError("Dense statevector backend supports at most 10 qubits")
+        actual_seed = self.seed if seed is None else seed
+        if actual_seed is not None and (type(actual_seed) is not int or actual_seed < 0):
+            raise ValueError("seed must be a nonnegative integer or None")
+        rng = np.random.default_rng(actual_seed)
         state = self._zero_state(circuit.num_qubits)
         measurements = []
 

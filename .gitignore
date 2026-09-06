@@ -7,3 +7,7 @@ __pycache__/
 .coverage
 .venv/
 venv/
+
+# Local package installation artifacts
+build/
+*.egg-info/
