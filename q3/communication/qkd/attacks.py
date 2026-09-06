@@ -12,11 +12,11 @@ def intercept_resend(
     eve_bits = []
     eve_bases = []
 
-    for bit, _basis in zip(bits, bases):
+    for bit, basis in zip(bits, bases):
         eve_basis = generator.choice([0, 1])
         eve_bases.append(eve_basis)
 
-        if eve_basis == 0:
+        if eve_basis == basis:
             eve_bits.append(bit)
         else:
             eve_bits.append(generator.choice([0, 1]))

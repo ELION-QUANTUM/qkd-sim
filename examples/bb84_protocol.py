@@ -12,7 +12,7 @@ def print_report(title, report):
     print(f"Matched bases:         {report['matched_bases']}")
     print(f"Final key length:      {report['final_key_length']}")
     print(f"Error rate (QBER):     {report['error_rate']:.4f}")
-    print(f"Secure channel:        {report['secure']}")
+    print(f"QBER heuristic passed: {report['secure']}")
     print(f"Threat level:          {report['threat_level']}")
     print(f"Threat reason:         {report['threat_reason']}")
     print(f"Post-processing:       {report['postprocessing']}")
@@ -21,7 +21,7 @@ def print_report(title, report):
 
 def print_decision(title, decision):
     print(title)
-    print(f"Secure:                {decision['secure']}")
+    print(f"QBER heuristic passed: {decision['secure']}")
     print(f"Threat level:          {decision['threat_level']}")
     print(f"Error rate (QBER):     {decision['error_rate']:.4f}")
     print(f"Thresholds used:       {decision['thresholds_used']}")

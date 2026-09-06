@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional, Tuple, Union
 
-from q3.core.registers import BitLike, ClassicalRegister, QubitLike, QubitRegister
+from q3.core.registers import BitLike, BitRef, ClassicalRegister, QubitLike, QubitRef, QubitRegister
 
 
 @dataclass(frozen=True)
@@ -29,6 +29,10 @@ class Circuit:
             num_qubits = name
             name = None
 
+        if isinstance(num_qubits, bool) or not isinstance(num_qubits, int):
+            raise ValueError("Number of qubits must be an integer.")
+        if isinstance(num_clbits, bool) or not isinstance(num_clbits, int):
+            raise ValueError("Number of classical bits must be an integer.")
         if num_qubits < 0:
             raise ValueError("Number of qubits cannot be negative.")
         if num_clbits < 0:
@@ -63,16 +67,30 @@ class Circuit:
         return register
 
     def _coerce_qubit(self, qubit: QubitLike) -> int:
-        return qubit if isinstance(qubit, int) else qubit.index
+        if type(qubit) is int:
+            return qubit
+        if (isinstance(qubit, QubitRef) and self._qubit_register is not None
+                and any(qubit is ref for ref in self._qubit_register)):
+            return qubit.index
+        raise ValueError("Qubit reference must belong to this circuit's register")
 
     def _coerce_clbit(self, clbit: BitLike) -> int:
-        return clbit if isinstance(clbit, int) else clbit.index
+        if type(clbit) is int:
+            return clbit
+        if (isinstance(clbit, BitRef) and self._classical_register is not None
+                and any(clbit is ref for ref in self._classical_register)):
+            return clbit.index
+        raise ValueError("Classical reference must belong to this circuit's register")
 
     def _validate_qubit(self, index: int) -> None:
+        if type(index) is not int:
+            raise ValueError("Qubit index must be an integer")
         if index < 0 or index >= self.num_qubits:
             raise IndexError(f"Qubit index out of range: {index}")
 
     def _validate_clbit(self, index: int) -> None:
+        if type(index) is not int:
+            raise ValueError("Classical bit index must be an integer")
         if self.num_clbits == 0:
             raise ValueError(
                 "Circuit has no classical register. "
@@ -81,13 +99,42 @@ class Circuit:
         if index < 0 or index >= self.num_clbits:
             raise IndexError(f"Classical bit index out of range: {index}")
 
-    def append(self, instruction: Instruction) -> "Circuit":
+    def _validate_instruction(self, instruction: Instruction) -> None:
+        if not isinstance(instruction, Instruction):
+            raise ValueError("Expected an Instruction")
+        if instruction.name not in ("H", "X", "Z", "CX", "MEASURE"):
+            raise ValueError(f"Unsupported instruction: {instruction.name}")
+        if (not isinstance(instruction.targets, tuple) or len(instruction.targets) != 1
+                or not isinstance(instruction.controls, tuple)
+                or len(instruction.controls) != (1 if instruction.name == "CX" else 0)):
+            raise ValueError("Invalid instruction arity")
+        if (instruction.name == "MEASURE") != (instruction.clbit is not None):
+            raise ValueError("Only MEASURE requires a classical target")
+        if set(instruction.targets) & set(instruction.controls):
+            raise ValueError("Control and target qubits must differ for CX")
         for target in instruction.targets:
             self._validate_qubit(target)
         for control in instruction.controls:
             self._validate_qubit(control)
         if instruction.clbit is not None:
             self._validate_clbit(instruction.clbit)
+
+    def validate(self) -> None:
+        for count in (self.num_qubits, self.num_clbits):
+            if type(count) is not int or count < 0:
+                raise ValueError("Register sizes must be nonnegative integers")
+        measured = False
+        for instruction in self.instructions:
+            self._validate_instruction(instruction)
+            if instruction.name == "MEASURE":
+                measured = True
+            elif measured:
+                raise ValueError("Only terminal measurements are supported")
+
+    def append(self, instruction: Instruction) -> "Circuit":
+        self._validate_instruction(instruction)
+        if instruction.name != "MEASURE" and any(i.name == "MEASURE" for i in self.instructions):
+            raise ValueError("Only terminal measurements are supported")
         self.instructions.append(instruction)
         return self
 

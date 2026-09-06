@@ -10,8 +10,8 @@ They should not be confused.
 ## Computation core assumptions
 
 - State evolution is modeled exactly for the implemented gate set.
-- The simulator is intended for small circuits only.
-- Measurement is computational-basis only.
+- The dense simulator enforces a maximum of 10 qubits before allocation.
+- Measurement is computational-basis and terminal only; later gates are rejected.
 - No device noise or calibration effects are modeled.
 
 ## QKD module assumptions
